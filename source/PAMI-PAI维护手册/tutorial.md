@@ -2,15 +2,22 @@
 ## PAMI-PAI计算节点配置
 ### 服务器配置：
 1、重装系统：需安装ubutu18.04系统，尽量使用原版英文系统，设置集群统一的用户名和密码
+
 2、开机也许会循环卡住在登陆界面，无需关注（可能是因为内核和显卡驱动的原因，后面使用命令行装完驱动后可以正常进入桌面），因为我们是配置为服务器节点，所以使用 ```ctrl+alt+F3```（F1-F7随意）进入命令行即可
+
 3、开机登录，保证网线连接，使用apt安装```sudo apt install net-tools，openssh-server```分别是用于查看本机ip地址和允许远程连接
+
 4、使用```ifconfig```命令查看本机的IP地址，后面的步骤都使用自己的电脑远程登录操作
 
 ### 远程登录操作以下步骤：
 1、在自己机器上使用```ssh-copy-id username@ip_address```，将ssh公钥发送到服务器，此操作可以保证后面是免密登录，username是服务器的用户名，ip_address是服务器ip地址，紧接着会要求输入服务器密码，输入过程是不会显示的，输入完直接回车即可
+
 2、远程登陆机器 ```ssh username@ip_address```
+
 3、安装基础操作需要用到的包：vim（用于简单的文件编辑），ntp（保证集群时间统一），python（一般都有），nfs-common（网络文件系统），zip
+
 4、首先设置系统不要自己更新啦，```sudo vim /etc/apt/apt.conf.d/20auto-upgrades```,将所有更新，下载都设置为"0"
+
 5、为了保证机器的下载速度，尽量更换国内的镜像源，我选择的是清华镜像源，采用如下命令即可更新：
 ```
 sudo sed -i "s@http://.*archive.ubuntu.com@https://mirrors.tuna.tsinghua.edu.cn@g" /etc/apt/sources.list
