@@ -7,7 +7,7 @@ Welcome to PAMI-PAI's documentation!
 ====================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
    PAMI-PAI使用手册/tutorial
