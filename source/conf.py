@@ -32,7 +32,7 @@ release = 'v1'
 # ones.
 extensions = [
     'recommonmark',
-    'sphinx_markdown_tables'
+    'sphinx-markdown-tables'
 ]
 
 
