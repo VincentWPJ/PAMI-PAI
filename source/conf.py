@@ -18,8 +18,8 @@
 # -- Project information -----------------------------------------------------
 
 project = 'PAMI-PAI'
-copyright = '2023, weipengjin'
-author = 'weipengjin'
+copyright = '2023, VincentWPJ'
+author = 'VincentWPJ'
 
 # The full version, including alpha/beta/rc tags
 release = 'v1'
