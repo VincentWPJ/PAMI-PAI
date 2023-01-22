@@ -101,14 +101,14 @@ sudo apt install nvidia-container-runtime
 
 查看/etc/docker/daemon.json信息：
 {
-  "default-address-pools": [{"base":"10.10.0.0/16","size":24}]
+  "default-address-pools": [{"base":"10.10.0.0/16","size":24}],
   "default-runtime": "nvidia",
   "runtimes": {
       "nvidia": {
           "path": "/usr/bin/nvidia-container-runtime",
           "runtimeArgs": []
       }
-  },
+  }
 }
 **一定要添加"default-runtime": "nvidia"，否则后面会报错：The default runtime is not set correctly
 
@@ -152,19 +152,38 @@ sudo docker run -itd \
         siaimes/dev-box:v1.8.1
 ```
 ### Q&A
-master机器无法使用kubectl，报错：The connection to the server localhost:8080 was refused - did you specify the right host or port?
+- master机器无法使用kubectl，报错：The connection to the server localhost:8080 was refused - did you specify the right host or port?
 解决方案：
-```
-mkdir -p #HOME/.kube
-sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-sudo chown $(id -u):$(id -g) $HOME/.kube/config
-```
-可以正常使用kubectl get nodes
+  ```
+  mkdir -p #HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+  ```
+  可以正常使用kubectl get nodes
+
+
+- 若出现 "由于没有公钥，无法验证下列签名：NO_PUBKEY XXXXXXXXXXXXXX"
+解决方案：执行
+  ```
+  sudo apt-key dev --keyserver keyserver.ubuntu.com --recv-keys XXXXXXXXXXXXXX
+  ```
+
+- 若安装ubuntu18后，开机没有网络（没有网卡驱动）
+  解决方案：
+  - 找到网卡型号 ```lspci | grep -i net```
+  - 到对应的官网找到网卡驱动
+  - 同时将网卡驱动和ubuntu安装盘插入无网机器
+  - 将网卡驱动和安装盘内的pool文件夹复制到无网机器
+  - 在pool文件夹中找到gcc相关的安装包，利用``` sudo dpkg -i xxx.deb```安装，保证无网机器可以执行``` gcc version```并获得版本号
+  - 执行网卡驱动的安装程序，realtek 8125网卡的是``` sudo ./autorun.sh```
 
 
 ## PAMI-PAI存储节点配置
+在集群系统中，各用户申请计算资源时，是随机分配计算节点的。因此，如若不使用分布式的网络存储方案，则每一次申请计算资源时，均需要传输数据集。因此，我们为集群新配置了一台高性能的文件存储服务器。
 ### 存储节点硬件配置
+存储节点服务器采用英特尔13代CPU ，128G内存，万兆网卡，96T机械硬盘(raidz阵列)，4T固态硬盘（不组阵列）。理论上，机械硬盘阵列的顺序读写性能超过1000M/s，足以应对实验室同学的正常存储，但考虑到多机同时运行程序时对于高速随机读写性能的需求，节点也配备了固态硬盘池。另外，存储节点配备了万兆网卡。
 ### 存储节点文件系统
+考虑到规模和成本，目前存储节点使用的是ZFS文件系统并开启NFS共享。
 
 ## 集群网络环境
-### 网络硬件配置 
+原先实验室的内网是百兆，节点之间传输最快约为11M/s，多人共享下会更慢。为了保证实验室和集群之间的通信速率，我们将实验室的内网交换机全部升级为千兆，而对于集群的内网，我们给所有节点配备了万兆网卡，节点之间的数据交换则由万兆交换机承担，传输速度约为1250M/s，完全能够满足实验室的使用要求。
