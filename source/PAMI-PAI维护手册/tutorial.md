@@ -1,4 +1,4 @@
-# PAMI-PAI维护手册
+# PAMI-PAI维护手册(旧版)
 ## PAMI-PAI计算节点配置
 ### 服务器配置
 1、重装系统：需安装ubutu18.04系统，尽量使用原版英文系统，设置集群统一的用户名和密码
@@ -176,7 +176,7 @@ sudo docker run -itd \
 - 若出现 "由于没有公钥，无法验证下列签名：NO_PUBKEY XXXXXXXXXXXXXX"
 解决方案：执行
   ```
-  sudo apt-key dev --keyserver keyserver.ubuntu.com --recv-keys XXXXXXXXXXXXXX
+  sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys XXXXXXXXXXXXXX
   ```
 
 - 若安装ubuntu18后，开机没有网络（没有网卡驱动）
@@ -187,3 +187,13 @@ sudo docker run -itd \
   - 将网卡驱动和安装盘内的pool文件夹复制到无网机器
   - 在pool文件夹中找到gcc相关的安装包，利用``` sudo dpkg -i xxx.deb```安装，保证无网机器可以执行``` gcc version```并获得版本号
   - 执行网卡驱动的安装程序，realtek 8125网卡的是``` sudo ./autorun.sh```
+
+- 部署中出现服务一直打印“xxxxx is not ready, please wait a moment”
+  解决方案：
+  - 中止部署
+  - 利用```kubectl get pod -A ```查看目前的pod运行情况
+  - 出错的xxxxpod的状态应该是被终止
+  - 利用```kubectl delete pod xxxx -n namespace --force --grace-period=0```强制删除此pod
+  - 重新部署，成功
+
+# PAMI-PAI维护手册(新版)
