@@ -47,7 +47,7 @@ sudo mount -t nfs 192.168.50.60:/mnt/pai-hdd/pai-hdd  /home/wpj/pai-hdd
 ```
 
 ## 登录集群
-以本地Ubuntu系统为例：
+以本地Ubuntu系统为例（机器在227，且连入227的内网）：
 ```
 # 添加环境变量
 vim ~/.bashrc
@@ -59,6 +59,10 @@ source ~/.bashrc
 det user login
 username: xxxx
 password for user 'xxxx':
+```
+对于机器不在227，如在418或校内其他地方的同学，仅需修改环境变量
+```
+export DET_MASTER=202.120.37.202
 ```
 ## 提交作业
 集群的显卡资源申请：
