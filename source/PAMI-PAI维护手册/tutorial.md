@@ -197,3 +197,38 @@ sudo docker run -itd \
   - 重新部署，成功
 
 # PAMI-PAI维护手册(新版)
+## 配置环境（包括master和agent）
+- 安装docker
+  ```
+  sudo apt install docker.io
+  ```
+- 安装nvidia-container-toolkit
+  ```
+  curl -fsSL https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
+  distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
+  curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+  sudo apt-get update
+
+  sudo apt-get install -y --no-install-recommends nvidia-container-toolkit
+  sudo systemctl restart docker
+  ```
+- 安装determined
+  ```
+  pip install determined
+  ```
+## 配置master机器
+- 创建postgres容器
+  ```
+  docker run --name determined-db --network host -v determined_db:/var/lib/postgresql/data -e POSTGRES_DB=determined -e POSTGRES_PASSWORD=<PASSWORD> POSTGRES:10
+  ```
+- 创建determinedai-master容器
+  （需配置好master.yaml文件，主要是postgres接口和资源池）
+  ```
+  docker run -p 8080:8080 -v "$PWD"/master.yaml:/etc/determined/master.yaml determinedai/determined-master:0.20.1
+  ```
+## 配置agent机器
+- 创建determinedai-agent容器
+  （需按照master机器中设置的资源池设置agent.yaml文件）
+  ```
+  docker run --gpus all -v /var/run/docker.sock:/var/run/docker.sock -v "$PWD"/agent.yaml:/etc/determined/agent.yaml  determinedai/determined-agent:0.20.1
+  ```
